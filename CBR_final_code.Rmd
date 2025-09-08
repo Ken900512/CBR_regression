@@ -1,0 +1,190 @@
+---
+title: "回歸期末"
+author: "M122040017 吳俞憲"
+date: "2023-12-22"
+output: html_document
+---
+#新模型
+```{r}
+library(readxl)
+data <- read_excel("D:/dataset/報告用.xlsx")
+fm <-lm(CBR~ER+YAR+LOWR+UR+UV+LT+DI+DM+CAR+AR+FD, data)
+summary(fm)
+```
+
+變數篩選
+
+```{r}
+f0 <- lm(CBR ~ 1, data)
+forward_model <- step(f0                     , 
+                      scope = formula(fm),
+                      direction = "forward"  ,
+                      trace = 2              ,  
+                      k = log(nrow(data)))  
+```
+
+新模型
+
+```{r}
+fm1 <- lm(CBR~AR+YAR+DM+UR, data)
+summary(fm1)
+```
+
+```{r}
+library(car)
+vif(fm1)
+```
+
+
+
+看模型初步問題
+```{r}
+plot(fm1,las=1)
+
+```
+
+```{r}
+avPlots(fm1)
+```
+
+變數AR
+
+```{r}
+plot(data$AR,resid(fm1),xlab="AR", ylab="Residul", main="Residual Plot vs AR")
+plot(data$AR,data$CBR,xlab="AR", ylab="CBR", main="CBR vs AR")
+```
+
+變數YAR
+
+```{r}
+plot(data$YAR,resid(fm1),xlab="YAR", ylab="Residul", main="Residual Plot vs YAR")
+plot(data$YAR,data$CBR,xlab="YAR", ylab="CBR", main="CBR vs YAR")
+```
+
+變數DM
+
+```{r}
+plot(data$DM,resid(fm1),xlab="DM", ylab="Residul", main="Residual Plot vs DM")
+plot(data$DM,data$CBR,xlab="DM", ylab="CBR", main="CBR vs DM")
+```
+
+變數UR
+
+```{r}
+plot(data$UR,resid(fm1),xlab="UR", ylab="Residul", main="Residual Plot vs UR")
+plot(data$UR,data$CBR,xlab="DM", ylab="CBR", main="CBR vs UR")
+```
+
+
+
+
+
+增加平方項
+```{r}
+fm12 <- lm(CBR~AR+YAR+UR+DM+I(YAR^2)+I(UR^2), data)
+summary(fm12)
+```
+增加交互項
+```{r}
+fm2 <- lm(CBR~AR+YAR*UR+DM+I(YAR^2)+I(UR^2), data)
+summary(fm2)
+
+```
+
+
+查看模型假設
+
+```{r}
+plot(fm2,las=1)
+```
+
+```{r}
+plot(fitted(fm2),resid(fm2),xlab="fitted value", ylab="Residul", main="Residual Plot")
+abline(0,0,col = "red", lty = 2)
+
+```
+
+刪除高槓桿點
+
+新模型
+```{r}
+data_c <- data[-c(76,86,85), ]
+fm3 <- lm(CBR~AR+YAR*UR+DM+I(YAR^2)+I(UR^2), data_c)
+summary(fm3)
+```
+
+```{r}
+plot(fm3, las=1)
+```
+
+修正方差不一致(方差轉換)
+
+```{r}
+sfm2 <- update(fm2,sqrt(.)~.)
+summary(sfm2)
+```
+
+```{r}
+plot(sfm2,las=1)
+```
+
+```{r}
+bptest(sfm2)
+```
+
+```{r}
+plot(fitted(sfm2),resid(sfm2),xlab="fitted value", ylab="Residul", main="Residual Plot")
+abline(0,0,col = "red", lty = 2)
+
+
+```
+
+
+
+
+
+WLSE
+```{r}
+w <- 1/(fitted(fm2)^2)
+wlse <- lm(CBR~AR+YAR*UR+DM+I(YAR^2)+I(UR^2),data,weight=1/(fitted(fm2)^2))
+summary(wlse)
+```
+
+
+```{r}
+plot(wlse, las=1)
+```
+
+```{r}
+bptest(wlse)
+```
+
+```{r}
+plot((w^(1/2))*wlse$fitted.values,(w^(1/2))*wlse$residuals,
+     xlab = 'fitted value',ylab = 'weighted residuals')
+abline(0,0,col = "red", lty = 2)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

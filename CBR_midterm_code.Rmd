@@ -1,0 +1,55 @@
+---
+title: "報告"
+author: "M122040017 吳俞憲"
+date: "2023-10-21"
+output: html_document
+---
+```{r}
+library(readxl)
+data <- read_excel("D:/dataset/報告用.xlsx")
+fm <-lm(CBR~ER+CR+YAR+LOWR, data)
+summary(fm)
+
+```
+```{r}
+fm1 <-lm(CBR~ER+YAR+LOWR, data)
+summary(fm1)
+```
+
+```{r}
+plot(fitted(fm1),resid(fm1),xlab="fitted value", ylab="Residul", main="Residual Plot")
+abline(0,0,col = "red", lty = 2)
+
+
+
+
+```
+```{r}
+plot(fm1,las=1)
+
+```
+
+
+
+```{r}
+plot(data$ER,resid(fm1),xlab="ER", ylab="Residul", main="Residual Plot vs ER")
+```
+
+```{r}
+plot(data$YAR,resid(fm1),xlab="YAR", ylab="Residul", main="Residual Plot vs YAR")
+```
+
+```{r}
+plot(data$LOWR,resid(fm1),xlab="LOWR", ylab="Residul", main="Residual Plot vs LOWR")
+```
+
+```{r}
+library(car)
+fm1 <-lm(CBR~ER+YAR+LOWR, data)
+vif(fm1)
+```
+
+
+
+
+
