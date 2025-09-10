@@ -69,7 +69,7 @@ ER、YAR、LOWR三者的VIF值都較小，沒有共線性的問題。
 CBR_regression  
 │── README.md    
 │── CBR_main.pdf # 書面報告(期中/期末)   
-│── CBR_code.ipynb # 程式碼(期中/期末)    
+│── CBR_code.Rmd# 程式碼(期中/期末)    
 │── CBR_reort.pdf  # 簡報(期中/期末)  
 │── CBR_data.xlsx #原始資料集  
 │── CBR_data_intro.xlsx #變數介紹  
